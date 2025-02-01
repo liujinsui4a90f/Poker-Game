@@ -2,6 +2,7 @@ import random
 from queue import Queue
 from matplotlib import pyplot as plt
 import itertools
+import logging
 
 class Player:
     def __init__(self):
@@ -33,6 +34,7 @@ class Record:
         plt.xlabel("Step")
         plt.legend()
         plt.show()  # Draw the graph
+        plt.savefig("records.png")  # Save the graph as a PNG file
         
 class Game:
     def __init__(self):
@@ -42,6 +44,8 @@ class Game:
         self.currentPlayer = 0  # Initialize the current player to player 0
         self.pile = []  # Initialize the pile as an empty list
         self.step = 1  # Initialize the step count to 1
+
+        logging.basicConfig(filename='game.log', level=logging.INFO, format='%(asctime)s %(message)s')  # Set up logging
 
         cards = [i % 13 + 1 for i in range(52)]  # Create a deck of 52 cards with values ranging from 1 to 13
         random.shuffle(cards)  # Shuffle the deck
@@ -76,11 +80,18 @@ class Game:
             self.pile.append(self.players[self.currentPlayer].dropCard())  # The current player drops a card into the pile
             #print(self.pile)  # Print the current state of the pile
             pos = self.TakeCardPos()  # Find the position of the card that can be taken
+            tmpNum = len(self.pile)
 
-            print(f"In step {self.step}")
+            logging.info(f"In step {self.step}")
             for i in self.players:
-                print(f"Player {self.players.index(i)} has {i.cards.qsize()} cards")  # Print the number of cards each player has
+                logging.info(f"Player {self.players.index(i)} has {i.cards.qsize()} cards")  # Print the number of cards each player has
 
+            if pos != -1:
+                print(f"In step {self.step}, player {self.currentPlayer} takes {tmpNum-pos} cards")
+            else:
+                print(f"In step {self.step}, no player takes any cards")
+
+            
             if pos != -1:
                 for i in range(pos, len(self.pile)):
                     temp = self.pile.pop()  # Remove a card from the pile
@@ -93,6 +104,7 @@ class Game:
             self.currentPlayer %= self.playerNum  # Ensure the current player is within the range of 0 to playerNum-1
         for p in self.players:
             if p.cards.qsize() != 0:  # If a player has cards left
+                logging.info(f"Player {self.players.index(p)} wins!")  # Print the winner
                 print(f"Player {self.players.index(p)} wins!")  # Print the winner
         self.recorder.draw()  # Draw the graph of the game
 
