@@ -1,5 +1,6 @@
 import random
 from queue import Queue
+from matplotlib import pyplot as plt
 import itertools
 
 class Player:
@@ -16,10 +17,28 @@ class Player:
     def dropCard(self):
         return self.cards.get()  # Remove a card from the player's queue
 
+class Record:
+    def __init__(self, playerNum):
+        self.pNum = playerNum  # Set the number of players
+        self.records = [[] for i in range(self.pNum)]  # Initialize the records list with empty lists for each player
+    
+    def addRecord(self, players : list):
+        for i, p in enumerate(players):
+            self.records[i].append(p.cards.qsize())  # Add the number of cards each player has to the corresponding record list
+
+    def draw(self):
+        plt.figure(figsize=(10, 6))  # Set the size of the graph
+        for i in range(self.pNum):
+            plt.plot(self.records[i], label=f"Player {i}")
+        plt.xlabel("Step")
+        plt.legend()
+        plt.show()  # Draw the graph
+        
 class Game:
     def __init__(self):
         self.playerNum = 4  # Set the number of players to 4
         self.players = [Player() for i in range(self.playerNum)]  # Create the specified number of player objects
+        self.recorder = Record(self.playerNum)  # Create a record object for the game
         self.currentPlayer = 0  # Initialize the current player to player 0
         self.pile = []  # Initialize the pile as an empty list
         self.step = 1  # Initialize the step count to 1
@@ -55,7 +74,7 @@ class Game:
                 continue  # Skip the current player and switch to the next player
 
             self.pile.append(self.players[self.currentPlayer].dropCard())  # The current player drops a card into the pile
-            print(self.pile)  # Print the current state of the pile
+            #print(self.pile)  # Print the current state of the pile
             pos = self.TakeCardPos()  # Find the position of the card that can be taken
 
             print(f"In step {self.step}")
@@ -69,11 +88,13 @@ class Game:
             else:
                 self.currentPlayer += 1  # If no card can be taken, switch to the next player
 
+            self.recorder.addRecord(self.players)  # Add the current state of the game to the record object
             self.step += 1  # Increment the step count
             self.currentPlayer %= self.playerNum  # Ensure the current player is within the range of 0 to playerNum-1
         for p in self.players:
             if p.cards.qsize() != 0:  # If a player has cards left
                 print(f"Player {self.players.index(p)} wins!")  # Print the winner
+        self.recorder.draw()  # Draw the graph of the game
 
 
 
