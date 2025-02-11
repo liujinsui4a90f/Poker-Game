@@ -37,8 +37,8 @@ class Record:
         plt.savefig("records.png")  # Save the graph as a PNG file
         
 class Game:
-    def __init__(self):
-        self.playerNum = 4  # Set the number of players to 4
+    def __init__(self, num=4):
+        self.playerNum = num  # Set the number of players to 4
         self.players = [Player() for i in range(self.playerNum)]  # Create the specified number of player objects
         self.recorder = Record(self.playerNum)  # Create a record object for the game
         self.currentPlayer = 0  # Initialize the current player to player 0
@@ -111,5 +111,5 @@ class Game:
 
 
 if __name__ == "__main__":
-    g = Game()  # Create a game object
+    g = Game(6)  # Create a game object
     g.run()  # Run the game
