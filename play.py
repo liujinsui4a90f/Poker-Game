@@ -111,5 +111,9 @@ class Game:
 
 
 if __name__ == "__main__":
-    g = Game(6)  # Create a game object
-    g.run()  # Run the game
+    while True:
+        g = Game(6)  # Create a game object
+        g.run()  # Run the game
+        ans = input("Do you want to play again? (y/n): ")  # Ask the user if they want to play again
+        if ans.lower() != "y":  # If the user does not want to play again
+            break  # Exit the loop
